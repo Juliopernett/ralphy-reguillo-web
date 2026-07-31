@@ -3,18 +3,32 @@
 import { useState } from "react";
 import Image from "next/image";
 import { AnimatePresence, motion } from "framer-motion";
-import { Music2, Play, Pause, X, ExternalLink } from "lucide-react";
+import { Music2, Play, X, ExternalLink } from "lucide-react";
 import { artist } from "@/data/artist";
 
 const EQ_BARS = [0.4, 0.9, 0.6, 1, 0.5];
 
+/**
+ * This is a "now playing" style widget, not a real inline audio player.
+ * An earlier version tried to autoplay a hidden/tiny YouTube iframe (both
+ * via the raw ?autoplay=1 param and via the IFrame Player API's
+ * playVideo() called from a click handler) — both are unreliable across
+ * browsers: Chrome doesn't consistently propagate user-activation into a
+ * postMessage-controlled cross-origin iframe, and iOS Safari additionally
+ * refuses unmuted autoplay on a near-invisible video element. The only
+ * approach that reliably plays real audio everywhere, including iOS
+ * Safari, is a direct tap on YouTube's own visible player — so the play
+ * button opens the real video there instead of faking inline playback.
+ */
 export function MusicPlayer() {
   const [open, setOpen] = useState(true);
-  const [playing, setPlaying] = useState(false);
 
   const spotify = artist.socialLinks.find((s) => s.platform === "spotify");
   const youtube = artist.socialLinks.find((s) => s.platform === "youtube");
   const playableVideo = artist.videos.find((v) => v.youtubeId);
+  const listenUrl = playableVideo
+    ? `https://www.youtube.com/watch?v=${playableVideo.youtubeId}`
+    : (spotify?.url ?? youtube?.url);
 
   return (
     <div className="fixed inset-x-0 bottom-24 z-40 flex justify-center px-16 sm:bottom-6 sm:px-4">
@@ -53,45 +67,28 @@ export function MusicPlayer() {
                   <motion.span
                     key={i}
                     className="w-[3px] rounded-full bg-amber-400"
-                    animate={
-                      playing
-                        ? { scaleY: [h * 0.4, h, h * 0.5, h * 0.9, h * 0.4] }
-                        : { scaleY: 0.2 }
-                    }
-                    transition={{
-                      duration: 1,
-                      repeat: playing ? Infinity : 0,
-                      delay: i * 0.08,
-                    }}
+                    animate={{ scaleY: [h * 0.4, h, h * 0.5, h * 0.9, h * 0.4] }}
+                    transition={{ duration: 1.4, repeat: Infinity, delay: i * 0.08 }}
                     style={{ height: 20, transformOrigin: "bottom" }}
                   />
                 ))}
               </div>
 
-              <button
-                onClick={() => setPlaying((p) => !p)}
-                disabled={!playableVideo}
-                aria-label={playing ? "Pausar" : "Reproducir"}
-                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-amber-400 text-black transition-transform hover:scale-105 disabled:opacity-40 disabled:hover:scale-100 sm:h-9 sm:w-9"
+              <a
+                href={listenUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={playableVideo ? `Escuchar ${playableVideo.title}` : "Escuchar música"}
+                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-amber-400 text-black transition-transform hover:scale-105 sm:h-9 sm:w-9"
               >
-                {playing ? <Pause size={15} /> : <Play size={15} className="ml-0.5" />}
-              </button>
-
-              {playing && playableVideo && (
-                <iframe
-                  key={playableVideo.youtubeId}
-                  src={`https://www.youtube.com/embed/${playableVideo.youtubeId}?autoplay=1`}
-                  allow="autoplay; encrypted-media"
-                  className="sr-only"
-                  title={`Reproduciendo ${playableVideo.title}`}
-                />
-              )}
+                <Play size={15} className="ml-0.5" />
+              </a>
 
               <a
                 href={spotify?.url ?? youtube?.url ?? "#"}
                 target="_blank"
                 rel="noopener noreferrer"
-                aria-label="Escuchar en Spotify"
+                aria-label="Ver más en redes"
                 className="hidden sm:flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-white/15 text-white/70 hover:text-amber-400 hover:border-amber-400/50 transition-colors"
               >
                 <ExternalLink size={15} />
