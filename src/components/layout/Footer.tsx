@@ -22,7 +22,7 @@ export function Footer() {
             </p>
           </div>
 
-          <div className="flex justify-center gap-4">
+          <div className="flex flex-wrap justify-center gap-3 sm:gap-4">
             {artist.socialLinks.map((social) => {
               const Icon = SOCIAL_ICONS[social.platform];
               return (
@@ -32,10 +32,10 @@ export function Footer() {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={social.label}
-                  className="flex h-11 w-11 items-center justify-center rounded-full border border-white/10 text-white/70 transition-all duration-300 hover:-translate-y-1 hover:border-[var(--brand)] hover:bg-[var(--brand)] hover:text-black"
+                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/10 text-white/70 transition-all duration-300 hover:-translate-y-1 hover:border-[var(--brand)] hover:bg-[var(--brand)] hover:text-black sm:h-11 sm:w-11"
                   style={{ ["--brand" as string]: social.color }}
                 >
-                  <Icon size={18} />
+                  <Icon className="h-[17px] w-[17px] sm:h-[18px] sm:w-[18px]" />
                 </a>
               );
             })}

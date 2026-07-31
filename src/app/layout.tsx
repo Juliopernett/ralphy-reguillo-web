@@ -68,10 +68,6 @@ export const metadata: Metadata = {
     description: artist.seo.description,
     images: [artist.heroImage],
   },
-  icons: {
-    icon: artist.favicon,
-    apple: artist.favicon,
-  },
   robots: {
     index: true,
     follow: true,

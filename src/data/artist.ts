@@ -241,7 +241,7 @@ export const artist: Artist = {
     whatsapp: "573046647259",
     whatsappDisplay: "304 664 7259",
     phone: "573004659458",
-    email: "contacto@ralphyreguillo.com",
+    email: "ralphyreguillo@gmail.com",
   },
 
   // TODO: actualizar con cifras reales verificadas.
