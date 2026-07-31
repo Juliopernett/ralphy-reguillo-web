@@ -39,7 +39,7 @@ export function SocialLinks() {
                       color: social.color,
                     }}
                   >
-                    <Icon size={26} />
+                    <Icon className="h-6 w-6" />
                   </div>
                   <div className="relative min-w-0 flex-1">
                     <p className="font-display text-lg uppercase text-white">

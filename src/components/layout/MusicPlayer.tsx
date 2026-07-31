@@ -14,6 +14,7 @@ export function MusicPlayer() {
 
   const spotify = artist.socialLinks.find((s) => s.platform === "spotify");
   const youtube = artist.socialLinks.find((s) => s.platform === "youtube");
+  const playableVideo = artist.videos.find((v) => v.youtubeId);
 
   return (
     <div className="fixed inset-x-0 bottom-24 z-40 flex justify-center px-16 sm:bottom-6 sm:px-4">
@@ -69,11 +70,22 @@ export function MusicPlayer() {
 
               <button
                 onClick={() => setPlaying((p) => !p)}
+                disabled={!playableVideo}
                 aria-label={playing ? "Pausar" : "Reproducir"}
-                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-amber-400 text-black transition-transform hover:scale-105 sm:h-9 sm:w-9"
+                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-amber-400 text-black transition-transform hover:scale-105 disabled:opacity-40 disabled:hover:scale-100 sm:h-9 sm:w-9"
               >
                 {playing ? <Pause size={15} /> : <Play size={15} className="ml-0.5" />}
               </button>
+
+              {playing && playableVideo && (
+                <iframe
+                  key={playableVideo.youtubeId}
+                  src={`https://www.youtube.com/embed/${playableVideo.youtubeId}?autoplay=1`}
+                  allow="autoplay; encrypted-media"
+                  className="sr-only"
+                  title={`Reproduciendo ${playableVideo.title}`}
+                />
+              )}
 
               <a
                 href={spotify?.url ?? youtube?.url ?? "#"}
