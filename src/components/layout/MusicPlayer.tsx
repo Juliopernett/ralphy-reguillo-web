@@ -5,6 +5,7 @@ import Image from "next/image";
 import { AnimatePresence, motion } from "framer-motion";
 import { Music2, Play, X, ExternalLink } from "lucide-react";
 import { artist } from "@/data/artist";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 
 const EQ_BARS = [0.4, 0.9, 0.6, 1, 0.5];
 
@@ -17,18 +18,18 @@ const EQ_BARS = [0.4, 0.9, 0.6, 1, 0.5];
  * postMessage-controlled cross-origin iframe, and iOS Safari additionally
  * refuses unmuted autoplay on a near-invisible video element. The only
  * approach that reliably plays real audio everywhere, including iOS
- * Safari, is a direct tap on YouTube's own visible player — so the play
- * button opens the real video there instead of faking inline playback.
+ * Safari, is a direct tap on YouTube's own visible player. Opening a new
+ * tab satisfied that but felt like leaving the site, so the play button
+ * opens a real, visible embed in an on-page modal instead — same
+ * reliability, without navigating away.
  */
 export function MusicPlayer() {
   const [open, setOpen] = useState(true);
+  const [videoOpen, setVideoOpen] = useState(false);
 
   const spotify = artist.socialLinks.find((s) => s.platform === "spotify");
   const youtube = artist.socialLinks.find((s) => s.platform === "youtube");
   const playableVideo = artist.videos.find((v) => v.youtubeId);
-  const listenUrl = playableVideo
-    ? `https://www.youtube.com/watch?v=${playableVideo.youtubeId}`
-    : (spotify?.url ?? youtube?.url);
 
   return (
     <div className="fixed inset-x-0 bottom-24 z-40 flex justify-center px-16 sm:bottom-6 sm:px-4">
@@ -74,15 +75,25 @@ export function MusicPlayer() {
                 ))}
               </div>
 
-              <a
-                href={listenUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label={playableVideo ? `Escuchar ${playableVideo.title}` : "Escuchar música"}
-                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-amber-400 text-black transition-transform hover:scale-105 sm:h-9 sm:w-9"
-              >
-                <Play size={15} className="ml-0.5" />
-              </a>
+              {playableVideo ? (
+                <button
+                  onClick={() => setVideoOpen(true)}
+                  aria-label={`Escuchar ${playableVideo.title}`}
+                  className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-amber-400 text-black transition-transform hover:scale-105 sm:h-9 sm:w-9"
+                >
+                  <Play size={15} className="ml-0.5" />
+                </button>
+              ) : (
+                <a
+                  href={spotify?.url ?? youtube?.url ?? "#"}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Escuchar música"
+                  className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-amber-400 text-black transition-transform hover:scale-105 sm:h-9 sm:w-9"
+                >
+                  <Play size={15} className="ml-0.5" />
+                </a>
+              )}
 
               <a
                 href={spotify?.url ?? youtube?.url ?? "#"}
@@ -117,6 +128,25 @@ export function MusicPlayer() {
           )}
         </AnimatePresence>
       </div>
+
+      {playableVideo && (
+        <Dialog open={videoOpen} onOpenChange={setVideoOpen}>
+          <DialogContent className="max-w-2xl border-white/10 bg-black p-0 overflow-hidden">
+            <DialogTitle className="sr-only">{playableVideo.title}</DialogTitle>
+            {videoOpen && (
+              <div className="aspect-video w-full">
+                <iframe
+                  className="h-full w-full"
+                  src={`https://www.youtube.com/embed/${playableVideo.youtubeId}?autoplay=1`}
+                  title={playableVideo.title}
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
+              </div>
+            )}
+          </DialogContent>
+        </Dialog>
+      )}
     </div>
   );
 }
