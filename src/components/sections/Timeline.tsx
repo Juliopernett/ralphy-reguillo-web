@@ -1,13 +1,13 @@
 "use client";
 
 import { CalendarDays, MapPin } from "lucide-react";
-import { artist } from "@/data/artist";
+import type { EventItem } from "@/types/artist";
 import { Reveal } from "@/components/ui/reveal";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { cn } from "@/lib/utils";
 
 const STATUS_STYLES: Record<
-  (typeof artist.events)[number]["status"],
+  EventItem["status"],
   { label: string; dot: string; text: string }
 > = {
   confirmado: {
@@ -27,7 +27,11 @@ const STATUS_STYLES: Record<
   },
 };
 
-export function Timeline() {
+interface TimelineProps {
+  events: EventItem[];
+}
+
+export function Timeline({ events }: TimelineProps) {
   return (
     <section id="presentaciones" className="relative bg-black py-28 sm:py-36">
       <div className="mx-auto max-w-4xl px-6 lg:px-10">
@@ -37,11 +41,16 @@ export function Timeline() {
           description="Consulta la disponibilidad de Ralphy Reguillo para tu evento."
         />
 
+        {events.length === 0 ? (
+          <p className="mt-16 text-center text-white/50">
+            Agenda en actualización. Escríbenos para consultar disponibilidad.
+          </p>
+        ) : (
         <div className="relative mt-16">
           <div className="absolute left-4 top-0 h-full w-px bg-gradient-to-b from-amber-400/60 via-white/10 to-transparent sm:left-1/2" />
 
           <ul className="flex flex-col gap-10">
-            {artist.events.map((event, i) => {
+            {events.map((event, i) => {
               const status = STATUS_STYLES[event.status];
               const isEven = i % 2 === 0;
               return (
@@ -100,6 +109,7 @@ export function Timeline() {
             })}
           </ul>
         </div>
+        )}
       </div>
     </section>
   );

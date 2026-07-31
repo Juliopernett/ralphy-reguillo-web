@@ -8,8 +8,11 @@ import { Timeline } from "@/components/sections/Timeline";
 import { Booking } from "@/components/sections/Booking";
 import { Stats } from "@/components/sections/Stats";
 import { Testimonials } from "@/components/sections/Testimonials";
+import { getEvents } from "@/lib/events";
 
-export default function Home() {
+export default async function Home() {
+  const events = await getEvents();
+
   return (
     <>
       <Hero />
@@ -18,7 +21,7 @@ export default function Home() {
       <Gallery />
       <Videos />
       <SocialLinks />
-      <Timeline />
+      <Timeline events={events} />
       <Booking />
       <Stats />
       <Testimonials />

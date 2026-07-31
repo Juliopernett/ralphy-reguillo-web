@@ -1,36 +1,72 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Ralphy Reguillo — Brochure Digital
 
-## Getting Started
+Sitio oficial de Ralphy Reguillo. Next.js 16 + TypeScript + Tailwind + Framer Motion.
+Publicado en `https://ralphyreguillo.portalvallenato.com` vía GitHub → Railway.
 
-First, run the development server:
+## Desarrollo local
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Abre [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Contenido del sitio
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Toda la información (biografía, logros, redes, galería, videos, contrataciones,
+estadísticas, testimonios) vive en un solo archivo:
 
-## Learn More
+```
+src/data/artist.ts
+```
 
-To learn more about Next.js, take a look at the following resources:
+Edita ese archivo, guarda, y el sitio se actualiza. Las secciones marcadas con
+`// TODO` en ese archivo usan datos de ejemplo — reemplázalas con información real
+cuando esté disponible (discografía, estadísticas, testimonios, enlaces de
+TikTok/Spotify/Apple Music).
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Agenda de presentaciones (dinámica, vía Google Sheets)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+A diferencia del resto del contenido, la sección **"Próximas Presentaciones"** NO
+se edita en el código — se lee automáticamente de una hoja de Google Sheets, para
+que se pueda actualizar mes a mes sin tocar el código ni hacer un nuevo despliegue.
 
-## Deploy on Vercel
+### Configurar la hoja (una sola vez)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+1. Crea una hoja de Google Sheets con estas columnas exactas en la primera fila:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+   | Fecha | Ciudad | Lugar | Evento | Estado |
+   |---|---|---|---|---|
+   | 15/08/2026 | Ciénaga | Plaza Principal | Fiestas Patronales | Confirmado |
+
+   - **Fecha**: formato `DD/MM/AAAA`.
+   - **Lugar**: opcional, si lo dejas vacío se muestra "Por confirmar".
+   - **Estado**: uno de `Confirmado`, `Agotado` o `Próximamente`.
+   - Agrega una fila por presentación. Las fechas pasadas se ocultan solas.
+
+2. En Google Sheets: **Archivo → Compartir → Publicar en la Web**.
+   - Selecciona la hoja correspondiente y el formato **Valores separados por comas (.csv)**.
+   - Clic en **Publicar**, copia el enlace que te da.
+
+3. En Railway → tu proyecto → **Variables**, agrega:
+
+   ```
+   GOOGLE_SHEET_EVENTS_URL = <el enlace que copiaste>
+   ```
+
+   Railway redesplegará automáticamente. El sitio revisa la hoja cada 30 minutos.
+
+Si la variable no está configurada, o Google Sheets no responde, el sitio muestra
+automáticamente las fechas de ejemplo definidas en `artist.ts` — la sección nunca
+se rompe ni queda vacía.
+
+## Despliegue
+
+Cada `git push` a `main` en GitHub dispara un redeploy automático en Railway.
+
+```bash
+git add -A
+git commit -m "mensaje descriptivo"
+git push origin main
+```

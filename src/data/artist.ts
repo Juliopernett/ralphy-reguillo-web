@@ -255,7 +255,8 @@ export const artist: Artist = {
   // TODO: sin lanzamientos discográficos confirmados aún; actualizar con el repertorio real.
   discography: [],
 
-  // TODO: agenda de ejemplo; reemplazar con fechas reales confirmadas.
+  // Fallback si GOOGLE_SHEET_EVENTS_URL no esta configurada o falla la carga
+  // (ver src/lib/events.ts). La agenda real se administra desde Google Sheets.
   events: [
     {
       id: "e1",
