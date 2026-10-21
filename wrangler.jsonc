@@ -6,5 +6,6 @@
   "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
   "assets": { "directory": ".open-next/assets", "binding": "ASSETS" },
   "routes": [{ "pattern": "ralphyreguillo.portalvallenato.com", "custom_domain": true }],
+  "services": [{ "binding": "WORKER_SELF_REFERENCE", "service": "ralphy-reguillo-web" }],
   "kv_namespaces": [{ "binding": "NEXT_INC_CACHE_KV", "id": "f4cda2fe5d064b8a80eba86b2b3bb250" }]
 }
